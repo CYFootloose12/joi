@@ -36,7 +36,7 @@
     - [`any.notes(notes)`](#anynotesnotes)
     - [`any.tags(tags)`](#anytagstags)
     - [`any.meta(meta)`](#anymetameta)
-    - [`any.example(value)`](#anyexamplevalue)
+    - [`any.example(...values)`](#anyexamplevalues)
     - [`any.unit(name)`](#anyunitname)
     - [`any.options(options)`](#anyoptionsoptions)
     - [`any.strict(isStrict)`](#anystrictisstrict)
@@ -142,8 +142,114 @@
   - [`alternatives` - inherits from `Any`](#alternatives---inherits-from-any)
     - [`alternatives.try(schemas)`](#alternativestryschemas)
     - [`alternatives.when(condition, options)`](#alternativeswhencondition-options)
-  - [`lazy(fn)` - inherits from `Any`](#lazyfn---inherits-from-any)
+  - [`lazy(fn[, options])` - inherits from `Any`](#lazyfn-options---inherits-from-any)
 - [Errors](#errors)
+  - [List of errors](#list-of-errors)
+    - [`alternatives.base`](#alternativesbase)
+    - [`any.allowOnly`](#anyallowonly)
+    - [`any.default`](#anydefault)
+    - [`any.empty`](#anyempty)
+    - [`any.invalid`](#anyinvalid)
+    - [`any.required`](#anyrequired)
+    - [`any.unknown`](#anyunknown)
+    - [`array.base`](#arraybase)
+    - [`array.excludes`](#arrayexcludes)
+    - [`array.excludesSingle`](#arrayexcludessingle)
+    - [`array.includesRequiredBoth`](#arrayincludesrequiredboth)
+    - [`array.includesRequiredKnowns`](#arrayincludesrequiredknowns)
+    - [`array.includesRequiredUnknowns`](#arrayincludesrequiredunknowns)
+    - [`array.includes`](#arrayincludes)
+    - [`array.includesSingle`](#arrayincludessingle)
+    - [`array.length`](#arraylength)
+    - [`array.max`](#arraymax)
+    - [`array.min`](#arraymin)
+    - [`array.orderedLength`](#arrayorderedlength)
+    - [`array.ref`](#arrayref)
+    - [`array.sparse`](#arraysparse)
+    - [`array.unique`](#arrayunique)
+    - [`binary.base`](#binarybase)
+    - [`binary.length`](#binarylength)
+    - [`binary.max`](#binarymax)
+    - [`binary.min`](#binarymin)
+    - [`boolean.base`](#booleanbase)
+    - [`date.base`](#datebase)
+    - [`date.greater`](#dategreater)
+    - [`date.isoDate`](#dateisodate)
+    - [`date.less`](#dateless)
+    - [`date.max`](#datemax)
+    - [`date.min`](#datemin)
+    - [`date.ref`](#dateref)
+    - [`date.strict`](#datestrict)
+    - [`date.timestamp.javascript`](#datetimestampjavascript)
+    - [`date.timestamp.unix`](#datetimestampunix)
+    - [`function.arity`](#functionarity)
+    - [`function.base`](#functionbase)
+    - [`function.class`](#functionclass)
+    - [`function.maxArity`](#functionmaxarity)
+    - [`function.minArity`](#functionminarity)
+    - [`function.ref`](#functionref)
+    - [`lazy.base`](#lazybase)
+    - [`lazy.schema`](#lazyschema)
+    - [`number.base`](#numberbase)
+    - [`number.greater`](#numbergreater)
+    - [`number.integer`](#numberinteger-1)
+    - [`number.less`](#numberless)
+    - [`number.max`](#numbermax)
+    - [`number.min`](#numbermin)
+    - [`number.multiple`](#numbermultiple)
+    - [`number.negative`](#numbernegative-1)
+    - [`number.port`](#numberport-1)
+    - [`number.positive`](#numberpositive-1)
+    - [`number.precision`](#numberprecision)
+    - [`number.ref`](#numberref)
+    - [`number.unsafe`](#numberunsafe)
+    - [`object.allowUnknown`](#objectallowunknown)
+    - [`object.and`](#objectand)
+    - [`object.assert`](#objectassert)
+    - [`object.base`](#objectbase)
+    - [`object.length`](#objectlength)
+    - [`object.max`](#objectmax)
+    - [`object.min`](#objectmin)
+    - [`object.missing`](#objectmissing)
+    - [`object.nand`](#objectnand)
+    - [`object.rename.multiple`](#objectrenamemultiple)
+    - [`object.rename.override`](#objectrenameoverride)
+    - [`object.rename.regex.multiple`](#objectrenameregexmultiple)
+    - [`object.rename.regex.override`](#objectrenameregexoverride)
+    - [`object.schema`](#objectschema-1)
+    - [`object.type`](#objecttype)
+    - [`object.with`](#objectwith)
+    - [`object.without`](#objectwithout)
+    - [`object.xor`](#objectxor)
+    - [`string.alphanum`](#stringalphanum-1)
+    - [`string.base64`](#stringbase64)
+    - [`string.base`](#stringbase)
+    - [`string.creditCard`](#stringcreditcard-1)
+    - [`string.dataUri`](#stringdatauri)
+    - [`string.email`](#stringemail)
+    - [`string.guid`](#stringguid)
+    - [`string.hexAlign`](#stringhexalign)
+    - [`string.hex`](#stringhex)
+    - [`string.hostname`](#stringhostname-1)
+    - [`string.ipVersion`](#stringipversion)
+    - [`string.ip`](#stringip)
+    - [`string.isoDate`](#stringisodate-1)
+    - [`string.length`](#stringlength)
+    - [`string.lowercase`](#stringlowercase-1)
+    - [`string.max`](#stringmax)
+    - [`string.min`](#stringmin)
+    - [`string.normalize`](#stringnormalize)
+    - [`string.ref`](#stringref)
+    - [`string.regex.base`](#stringregexbase)
+    - [`string.regex.invert.base`](#stringregexinvertbase)
+    - [`string.regex.invert.name`](#stringregexinvertname)
+    - [`string.regex.name`](#stringregexname)
+    - [`string.token`](#stringtoken-1)
+    - [`string.trim`](#stringtrim)
+    - [`string.uppercase`](#stringuppercase-1)
+    - [`string.uriCustomScheme`](#stringuricustomscheme)
+    - [`string.uriRelativeOnly`](#stringurirelativeonly)
+    - [`string.uri`](#stringuri)
 
 <!-- tocstop -->
 
@@ -1504,7 +1610,7 @@ const schema = Joi.number().multiple(3);
 ```
 
 Notes: `Joi.number.multiple(base)` _uses the modulo operator (%) to determine if a number is multiple of another number.
-Therefore, it has the normal limitations of Javascript modulo operator. The results with decimal/floats maybe incorrect._
+Therefore, it has the normal limitations of Javascript modulo operator. The results with decimal/floats may be incorrect._
 
 #### `number.positive()`
 
@@ -2339,3 +2445,1647 @@ Joi throws classical javascript `Error`s containing :
         - `label` - label of the value that errored, or the `key` if any, or the default `language.root`.
 - `annotate` - function that returns a string with an annotated version of the object pointing at the places where errors occurred. Takes an optional parameter that, if truthy, will strip the colors out of the output.
 - `_object` - the original object to validate.
+
+### List of errors
+
+<!-- errors -->
+#### `alternatives.base`
+
+**Description**
+
+No alternative matched the input.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string // Label if defined, otherwise it's the key
+}
+```
+
+#### `any.allowOnly`
+
+**Description**
+
+Only some values were allowed, the input didn't match any of them.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    valids: Array<any> // Contains the list of the valid values that were expected
+}
+```
+
+#### `any.default`
+
+**Description**
+
+If your [`any.default()`](#anydefaultvalue-description) generator function throws error, you will have it here.
+
+**Context**
+```ts
+{
+    error: Error // Error generated during the default value function call
+}
+```
+
+#### `any.empty`
+
+**Description**
+
+When an empty string is found and denied by invalid values.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: '', // Empty string
+    invalids: Array<any> // Contains the list of the invalid values that should be rejected
+}
+```
+
+#### `any.invalid`
+
+**Description**
+
+The value matched a value listed in the invalid values.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: any, // Value being validated
+    invalids: Array<any> // Contains the list of the invalid values that should be rejected
+}
+```
+
+#### `any.required`
+
+**Description**
+
+A required value wasn't present.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string // Label if defined, otherwise it's the key
+}
+```
+
+#### `any.unknown`
+
+**Description**
+
+A value was present while it wasn't expected.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string // Label if defined, otherwise it's the key
+}
+```
+
+#### `array.base`
+
+**Description**
+
+The value is not of Array type or could not be cast to an Array from a string.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string // Label if defined, otherwise it's the key
+}
+```
+
+#### `array.excludes`
+
+**Description**
+
+The array contains a value that is part of the exclusion list.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    pos: number, // Index where the value was found in the array
+    value: any // Value that matched an exclude condition
+}
+```
+
+#### `array.excludesSingle`
+
+**Description**
+
+Same as `array.excludes` but the value was a single value. Happens with [`array.single()`](#arraysingleenabled).
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    pos: number, // Index where the value was found in the array
+    value: any // Value that matched an exclude condition
+}
+```
+
+#### `array.includesRequiredBoth`
+
+**Description**
+
+Some values were expected to be present in the array and are missing. This error happens when we have a mix of labelled and unlabelled schemas.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    knownMisses: Array<string>, // Labels of all the missing values
+    unknownMisees: number // Count of missing values that didn't have a label
+}
+```
+
+#### `array.includesRequiredKnowns`
+
+**Description**
+
+Some values were expected to be present in the array and are missing. This error happens when we only have labelled schemas.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    knownMisses: Array<string> // Labels of all the missing values
+}
+```
+
+#### `array.includesRequiredUnknowns`
+
+**Description**
+
+Some values were expected to be present in the array and are missing. This error happens when we only have unlabelled schemas.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    unknownMisees: number // Count of missing values that didn't have a label
+}
+```
+
+#### `array.includes`
+
+**Description**
+
+The value didn't match any of the allowed types for that array.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    pos: number, // Index where the value was found in the array
+    value: any // Value that failed all the schemas
+}
+```
+
+#### `array.includesSingle`
+
+**Description**
+
+Same as `array.includes` but the value was a single value. Happens with [`array.single()`](#arraysingleenabled).
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    pos: number, // Index where the value was found in the array
+    value: any // Value that failed all the schemas
+}
+```
+
+#### `array.length`
+
+**Description**
+
+The array is not of the expected length.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    limit: number, // Length that was expected for this array
+    value: Array<any> // The array itself
+}
+```
+
+#### `array.max`
+
+**Description**
+
+The array has more elements than the maximum allowed.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    limit: number, // Maximum length that was expected for this array
+    value: Array<any> // The array itself
+}
+```
+
+#### `array.min`
+
+**Description**
+
+The array has less elements than the minimum allowed.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    limit: number, // Minimum length that was expected for this array
+    value: Array<any> // The array itself
+}
+```
+
+#### `array.orderedLength`
+
+**Description**
+
+Given an [`array.ordered()`](#arrayorderedtype), that array has more elements than it should.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    pos: number, // Index where the value was found in the array
+    limit: number // Maximum length that was expected for this array
+}
+```
+
+#### `array.ref`
+
+**Description**
+
+A reference was used in one of [`array.min()`](#arrayminlimit), [`array.max()`](#arraymaxlimit) or [`array.length()`](#arraylengthlimit) and the value pointed to by that reference in the input is not a valid number for those rules.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    ref: Reference, // Reference used
+    value: any // Value found using the reference
+}
+```
+
+#### `array.sparse`
+
+**Description**
+
+An `undefined` value was found in an array that shouldn't be sparse.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    pos: number // Index where an undefined value was found in the array
+}
+```
+
+#### `array.unique`
+
+**Description**
+
+A duplicate value was found in an array.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    pos: number, // Index where the duplicate value was found in the array
+    value: any, // Value that is duplicated
+    dupePos: number, // Index where the first appearance of the duplicate value was found in the array
+    dupeValue: any // Value with which the duplicate was met
+}
+```
+
+#### `binary.base`
+
+**Description**
+
+The value is either not a Buffer or could not be cast to a Buffer from a string.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string // Label if defined, otherwise it's the key
+}
+```
+
+#### `binary.length`
+
+**Description**
+
+The buffer was not of the specified length.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    limit: number, // Length that was expected for this buffer
+    value: Buffer // The buffer itself
+}
+```
+
+#### `binary.max`
+
+**Description**
+
+The buffer contains more bytes than expected.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    limit: number, // Maximum length that was expected for this buffer
+    value: Buffer // The buffer itself
+}
+```
+
+#### `binary.min`
+
+**Description**
+
+The buffer contains less bytes than expected.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    limit: number, // Minimum length that was expected for this buffer
+    value: Buffer // The buffer itself
+}
+```
+
+#### `boolean.base`
+
+**Description**
+
+The value is either not a boolean or could not be cast to a boolean from one of the truthy or falsy values.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: any // Input value
+}
+```
+
+#### `date.base`
+
+**Description**
+
+The value is either not a date or could not be cast to a date from a string or a number.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: any // Input value
+}
+```
+
+#### `date.greater`
+
+**Description**
+
+The date is over the limit that you set.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    limit: Date, // Maximum date
+    value: Date // Input value as Date
+}
+```
+
+#### `date.isoDate`
+
+**Description**
+
+The date does not match the ISO 8601 format.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: any // Input value
+}
+```
+
+#### `date.less`
+
+**Description**
+
+The date is under the limit that you set.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    limit: Date, // Minimum date
+    value: Date // Input value as Date
+}
+```
+
+#### `date.max`
+
+**Description**
+
+The date is over or equal to the limit that you set.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    limit: Date, // Maximum date
+    value: Date // Input value as Date
+}
+```
+
+#### `date.min`
+
+**Description**
+
+The date is under or equal to the limit that you set.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    limit: Date, // Minimum date
+    value: Date // Input value as Date
+}
+```
+
+#### `date.ref`
+
+**Description**
+
+A reference was used in one of [`date.min()`](#datemindate), [`date.max()`](#datemaxdate), [`date.less()`](#datelessdate) or [`date.greater()`](#dategreaterdate) and the value pointed to by that reference in the input is not a valid date.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    ref: Reference, // Reference used
+    value: any // Value found using the reference
+}
+```
+
+#### `date.strict`
+
+**Description**
+
+Occurs when the input is not a Date type and `convert` is disabled.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: any // Value
+}
+```
+
+#### `date.timestamp.javascript`
+
+**Description**
+
+Failed to be converted from a string or a number to a date as JavaScript timestamp.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: any // Input value
+}
+```
+
+#### `date.timestamp.unix`
+
+**Description**
+
+Failed to be converted from a string or a number to a date as Unix timestamp.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: any // Input value
+}
+```
+
+#### `function.arity`
+
+**Description**
+
+The number of arguments for the function doesn't match the required number.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    n: number // Expected arity
+}
+```
+
+#### `function.base`
+
+**Description**
+
+The input is not a function.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: any // Input value
+}
+```
+
+#### `function.class`
+
+**Description**
+
+The input is not a JavaScript class.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: any // Input value
+}
+```
+
+#### `function.maxArity`
+
+**Description**
+
+The number of arguments for the function is over the required number.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    n: number // Maximum expected arity
+}
+```
+
+#### `function.minArity`
+
+**Description**
+
+The number of arguments for the function is under the required number.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    n: number // Minimum expected arity
+}
+```
+
+#### `function.ref`
+
+**Description**
+
+The function is not a [`Joi.ref()`](#refkey-options).
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: function // Input value
+}
+```
+
+#### `lazy.base`
+
+**Description**
+
+The lazy function is not set.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string // Label if defined, otherwise it's the key
+}
+```
+
+#### `lazy.schema`
+
+**Description**
+
+The lazy function didn't return a joi schema.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    schema: any // The value return by the generator function
+}
+```
+
+#### `number.base`
+
+**Description**
+
+The value is not a number or could not be cast to a number.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: any // Input value
+}
+```
+
+#### `number.greater`
+
+**Description**
+
+The number is lower or equal to the limit that you set.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    limit: number, // Minimum value that was expected for this number
+    value: number // The number itself
+}
+```
+
+#### `number.integer`
+
+**Description**
+
+The number is not a valid integer.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: number // Value that failed, likely a floating number
+}
+```
+
+#### `number.less`
+
+**Description**
+
+The number is higher or equal to the limit that you set.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    limit: number, // Maximum value that was expected for this number
+    value: number // The number itself
+}
+```
+
+#### `number.max`
+
+**Description**
+
+The number is higher than the limit that you set.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    limit: number, // Maximum value that was expected for this number
+    value: number // The number itself
+}
+```
+
+#### `number.min`
+
+**Description**
+
+The number is lower than the limit that you set.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    limit: number, // Minimum value that was expected for this number
+    value: number // The number itself
+}
+```
+
+#### `number.multiple`
+
+**Description**
+
+The number could not be divided by the multiple you provided.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    multiple: number, // The number of which the input is supposed to be a multiple of
+    value: number // The number itself
+}
+```
+
+#### `number.negative`
+
+**Description**
+
+The number was positive.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: number // The number itself
+}
+```
+
+#### `number.port`
+
+**Description**
+
+The number didn't look like a port number.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: number // The number itself 
+}
+```
+
+#### `number.positive`
+
+**Description**
+
+The number was negative.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: number // The number itself
+}
+```
+
+#### `number.precision`
+
+**Description**
+
+The number didn't have the required precision.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    limit: number, // The precision that it should have had
+    value: number // The number itself
+}
+```
+
+#### `number.ref`
+
+**Description**
+
+A reference was used in one of [`number.min()`](#numberminlimit), [`number.max()`](#numbermaxlimit), [`number.less()`](#numberlesslimit), [`number.greater()`](#numbergreaterlimit), or [`number.multiple()`](#numbermultiplebase) and the value pointed to by that reference in the input is not a valid number.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    ref: Reference, // Reference used
+    value: any // Value found using the reference
+}
+```
+
+#### `number.unsafe`
+
+**Description**
+
+The number is not within the safe range of JavaScript numbers.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: any // Input value
+}
+```
+
+#### `object.allowUnknown`
+
+**Description**
+
+An unexpected property was found in the object.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    child: string, // Property that is unexpected
+    value: any // Value of that property
+}
+```
+
+#### `object.and`
+
+**Description**
+
+The AND condition between the properties you specified was not satisfied in that object.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    present: Array<string>, // List of properties that are set
+    presentWithLabels: Array<string>, // List of labels for the properties that are set
+    missing: Array<string>, // List of properties that are not set
+    missingWithLabels: Array<string> // List of labels for the properties that are not set
+}
+```
+
+#### `object.assert`
+
+**Description**
+
+The schema on an [`object.assert()`](#objectassertref-schema-message) failed to validate.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    ref: string, // Dotted path to the property that was checked
+    message: string // Custom message or default one
+}
+```
+
+#### `object.base`
+
+**Description**
+
+The value is not of object type or could not be cast to an object from a string.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: any // Input value
+}
+```
+
+#### `object.length`
+
+**Description**
+
+The number of keys for this object is not of the expected length.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    limit: number, // Number of keys that was expected for this object
+    value: object // The object itself
+}
+```
+
+#### `object.max`
+
+**Description**
+
+The number of keys for this object is over or equal to the limit that you set.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    limit: number, // Maximum number of keys
+    value: object // Input value
+}
+```
+
+#### `object.min`
+
+**Description**
+
+The number of keys for this object is under or equal to the limit that you set.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    limit: number, // Minimum number of keys
+    value: object // Input value
+}
+```
+
+#### `object.missing`
+
+**Description**
+
+The OR or XOR condition between the properties you specified was not satisfied in that object, none of it were set.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    peers: Array<string>, // List of properties were none of it was set
+    peersWithLabels: Array<string> // List of labels for the properties were none of it was set
+}
+```
+
+#### `object.nand`
+
+**Description**
+
+The NAND condition between the properties you specified was not satisfied in that object.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    main: string, // One of the properties that was present
+    mainWithLabel: string, // The label of the `main` property
+    peers: Array<string>, // List of the other properties that were present
+    peersWithLabels: Array<string> // List of the labels of the other properties that were present
+}
+```
+
+#### `object.rename.multiple`
+
+**Description**
+
+Another rename was already done to the same target property.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    from: string, // Origin property name of the rename
+    to: string // Target property of the rename
+}
+```
+
+#### `object.rename.override`
+
+**Description**
+
+The target property already exists and you disallowed overrides.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    from: string, // Origin property name of the rename
+    to: string // Target property of the rename
+}
+```
+
+#### `object.rename.regex.multiple`
+
+**Description**
+
+The target property already exists and you disallowed overrides.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    from: Array<string>, // List of property names that matched the regex
+    to: string // Target property of the rename
+}
+```
+
+#### `object.rename.regex.override`
+
+**Description**
+
+The target property already exists and you disallowed overrides.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    from: Array<string>, // List of property names that matched the regex
+    to: string // Target property of the rename
+}
+```
+
+#### `object.schema`
+
+**Description**
+
+The object was not a joi schema.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string // Label if defined, otherwise it's the key
+}
+```
+
+#### `object.type`
+
+**Description**
+
+The object is not of the type you specified.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    type: string, // Type name the object should have been
+    value: object // Input value
+}
+```
+
+#### `object.with`
+
+**Description**
+
+Property that should have been present at the same time as another one was missing.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    main: string, // Property that triggered the check
+    mainWithLabel: string, // Label of the property that triggered the check
+    peer: string, // Property that was missing
+    peerWithLabels: string // Label of the other property that was missing
+}
+```
+
+#### `object.without`
+
+**Description**
+
+Property that should have been absent at the same time as another one was present.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    main: string, // Property that triggered the check
+    mainWithLabel: string, // Label of the property that triggered the check
+    peer: string, // Property that was present
+    peerWithLabels: string // Label of the other property that was present
+}
+```
+
+#### `object.xor`
+
+**Description**
+
+The XOR condition between the properties you specified was not satisfied in that object.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    peers: Array<string>, // List of properties were none of it was set
+    peersWithLabels: Array<string> // List of labels for the properties were none of it was set
+}
+```
+
+#### `string.alphanum`
+
+**Description**
+
+The string doesn't only contain alphanumeric characters.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: string // Input value
+}
+```
+
+#### `string.base64`
+
+**Description**
+
+The string isn't a valid base64 string.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: string // Input value
+}
+```
+
+#### `string.base`
+
+**Description**
+
+The input is not a string.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: any // Input value
+}
+```
+
+#### `string.creditCard`
+
+**Description**
+
+The string is not a valid credit card number.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: string // Input value
+}
+```
+
+#### `string.dataUri`
+
+**Description**
+
+The string is not a valid data URI.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: string // Input value
+}
+```
+
+#### `string.email`
+
+**Description**
+
+The string is not a valid e-mail.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: string // Input value
+}
+```
+
+#### `string.guid`
+
+**Description**
+
+The string is not a valid GUID.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: string // Input value
+}
+```
+
+#### `string.hexAlign`
+
+**Description**
+
+The string contains hexadecimal characters but they are not byte-aligned.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: string // Input value
+}
+```
+
+#### `string.hex`
+
+**Description**
+
+The string is not a valid hexadecimal string.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: string // Input value
+}
+```
+
+#### `string.hostname`
+
+**Description**
+
+The string is not a valid hostname.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: string // Input value
+}
+```
+
+#### `string.ipVersion`
+
+**Description**
+
+The string is not a valid IP address considering the provided constraints.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    cidr: string, // CIDR used for the validation
+    version: Array<string>, // List of IP version accepted
+    value: string // Input value
+}
+```
+
+#### `string.ip`
+
+**Description**
+
+The string is not a valid IP address.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    cidr: string, // CIDR used for the validation
+    value: string // Input value
+}
+```
+
+#### `string.isoDate`
+
+**Description**
+
+The string is not a valid ISO date string.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: string // Input value
+}
+```
+
+#### `string.length`
+
+**Description**
+
+The string is not of the expected length.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    limit: number, // Length that was expected for this string
+    encoding: undefined | string, // Encoding specified for the check if any
+    value: string // Input value
+}
+```
+
+#### `string.lowercase`
+
+**Description**
+
+The string isn't all lower-cased.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: string // Input value
+}
+```
+
+#### `string.max`
+
+**Description**
+
+The string is larger than expected.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    limit: number, // Maximum length that was expected for this string
+    encoding: undefined | string, // Encoding specified for the check if any
+    value: string // Input value
+}
+```
+
+#### `string.min`
+
+**Description**
+
+The string is smaller than expected.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    limit: number, // Minimum length that was expected for this string
+    encoding: undefined | string, // Encoding specified for the check if any
+    value: string // Input value
+}
+```
+
+#### `string.normalize`
+
+**Description**
+
+The string isn't valid in regards of the normalization form expected.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    form: string, // Normalization form that is expected
+    value: string // Input value
+}
+```
+
+#### `string.ref`
+
+**Description**
+
+A reference was used in one of [`string.min()`](#stringminlimit-encoding), [`string.max()`](#stringmaxlimit-encoding) or [`string.length()`](#stringlengthlimit-encoding) and the value pointed to by that reference in the input is not a valid number for those rules.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    ref: Reference, // Reference used
+    value: any // Value found using the reference
+}
+```
+
+#### `string.regex.base`
+
+**Description**
+
+The string didn't match the regular expression.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    name: undefined, // Undefined since the regular expression has no name
+    pattern: string, // Regular expression
+    value: string // Input value
+}
+```
+
+#### `string.regex.name`
+
+**Description**
+
+The string didn't match the named regular expression.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    name: string, // Name of the regular expression
+    pattern: string, // Regular expression
+    value: string // Input value
+}
+```
+
+#### `string.regex.invert.base`
+
+**Description**
+
+The string matched the regular expression while it shouldn't.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    name: undefined, // Undefined since the regular expression has no name
+    pattern: string, // Regular expression
+    value: string // Input value
+}
+```
+
+#### `string.regex.invert.name`
+
+**Description**
+
+The string matched the named regular expression while it shouldn't.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    name: string, // Name of the regular expression
+    pattern: string, // Regular expression
+    value: string // Input value
+}
+```
+
+#### `string.token`
+
+**Description**
+
+The string isn't a token.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: string // Input value
+}
+```
+
+#### `string.trim`
+
+**Description**
+
+The string contains whitespaces around it.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: string // Input value
+}
+```
+
+#### `string.uppercase`
+
+**Description**
+
+The string isn't all upper-cased.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: string // Input value
+}
+```
+
+#### `string.uri`
+
+**Description**
+
+The string isn't a valid URI.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: string // Input value
+}
+```
+
+#### `string.uriCustomScheme`
+
+**Description**
+
+The string isn't a valid URI considering the custom schemes.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    scheme: string, // Scheme prefix that is expected in the URI
+    value: string // Input value
+}
+```
+
+#### `string.uriRelativeOnly`
+
+**Description**
+
+The string is a valid relative URI.
+
+**Context**
+```ts
+{
+    key: string, // Last element of the path accessing the value, `undefined` if at the root
+    label: string, // Label if defined, otherwise it's the key
+    value: string // Input value
+}
+```
+<!-- errorsstop -->
